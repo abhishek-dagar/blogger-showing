@@ -22,7 +22,8 @@ const eslintConfig = [
       "react/no-unescaped-entities":"off",
       "@typescript-eslint/no-unnecessary-type-constraint":"off",
       "@typescript-eslint/no-wrapper-object-types":"off",
-    }
+    },
+    ignorePatterns: ["node_modules", "dist", "build", "public", "src/generated"],
   }),
 ];
 
