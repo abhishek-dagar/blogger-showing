@@ -68,14 +68,6 @@ export default function PublicArticlesPage() {
     <div className="w-full py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Articles</h1>
-        <div className="space-x-2">
-          <Button asChild variant="outline">
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
-        </div>
       </div>
 
       {isLoadingArticles ? (
