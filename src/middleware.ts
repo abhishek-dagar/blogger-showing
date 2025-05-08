@@ -27,6 +27,8 @@ export async function middleware(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET,
     });
 
+    console.log("token", token);
+
     // Check if path requires authentication
     const isAuthRequired = authRequiredPaths.some((path) =>
       pathname.startsWith(path)
