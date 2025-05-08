@@ -8,6 +8,16 @@ const authRequiredPaths = ["/profile", "/articles"];
 // Path patterns that require ADMIN role
 const adminRequiredPaths = ["/admin", "/examples/role-ui"];
 
+// Ensure we have a valid secret
+const getSecret = () => {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    console.error("NEXTAUTH_SECRET is not set in environment variables");
+    throw new Error("NEXTAUTH_SECRET is not set");
+  }
+  return secret;
+};
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -22,12 +32,20 @@ export async function middleware(request: NextRequest) {
 
   // Get token from session
   try {
+    const secret = getSecret();
+    
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET,
+      secret,
+      secureCookie: process.env.NODE_ENV === "production",
     });
 
-    console.log("token", token);
+    // Log token status for debugging (remove in production)
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Token status:", token ? "Present" : "Null");
+      console.log("Request URL:", request.url);
+      console.log("Environment:", process.env.NODE_ENV);
+    }
 
     // Check if path requires authentication
     const isAuthRequired = authRequiredPaths.some((path) =>
@@ -59,7 +77,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     console.error("Error in middleware:", error);
-    // If there's an error with the token, let the page handle it
+    // In production, redirect to error page or home page
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    // In development, let the page handle the error
     return NextResponse.next();
   }
 } 
